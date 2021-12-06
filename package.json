@@ -8,7 +8,7 @@
     "test": "node test/index.js"
   },
   "files": [
-    "lib/"
+    "lib"
   ],
   "keywords": [
     "discord.js",
