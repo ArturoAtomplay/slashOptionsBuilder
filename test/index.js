@@ -19,9 +19,15 @@ client.on("messageCreate", (message) => {
     } else if (message.content === "!deploy") {
       if (message.author.id !== "624712119098802198") return message.reply("You are not authorized to use this command!");
       message.channel.send("Deploying...").then((m) => {
-        message.guild.commands.set(commands.map((c) => c.toJSON())).then(() => {
-          m.edit("Deployed!");
-        });
+        message.guild.commands
+          .set(commands.map((c) => c.toJSON()))
+          .then(() => {
+            m.edit("Deployed!");
+          })
+          .catch((e) => {
+            m.edit("Failed to deploy!");
+            console.error(e);
+          });
       });
     }
   })();
