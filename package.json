@@ -1,0 +1,27 @@
+{
+  "name": "slash-options-builder",
+  "version": "1.0.0",
+  "description": "options for slash commands discord.js",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc --watch",
+    "test": "node test/index.js"
+  },
+  "files": [
+    "lib/"
+  ],
+  "keywords": [
+    "discord.js",
+    "slash commands",
+    "slash builder",
+    "slash options builder"
+  ],
+  "author": "https://github.com/arturoAtomplay",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "discord.js": "^13.3.1"
+  }
+}
