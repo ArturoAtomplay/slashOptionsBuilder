@@ -17,6 +17,7 @@
     "slash options builder"
   ],
   "author": "https://github.com/arturoAtomplay",
+  "repository": "https://github.com/arturoAtomplay/slashOptionsBuilder",
   "license": "ISC",
   "devDependencies": {
     "typescript": "^4.5.2"
