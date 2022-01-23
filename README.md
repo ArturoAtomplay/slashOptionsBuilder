@@ -40,7 +40,7 @@ client.on("messageCreate", async (message) => {
 
 client.on("interactionCreate", async (interaction) => {
   if (interaction.isCommand()) {
-    if (interaction.command.name === "slash") {
+    if (interaction.command.name === "say") {
       const text = interaction.options.getString("text");
       interaction.reply(text);
     }
