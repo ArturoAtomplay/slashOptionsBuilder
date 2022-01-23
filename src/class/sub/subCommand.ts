@@ -1,48 +1,50 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, ExcludeEnum } from "discord.js";
+import {
+  ApplicationCommandAutocompleteOption,
+  ApplicationCommandChannelOptionData,
+  ApplicationCommandChoicesData,
+  ApplicationCommandNonOptionsData,
+  ApplicationCommandNumericOptionData,
+  ApplicationCommandOptionData,
+  ExcludeEnum,
+} from "discord.js";
 import { ChannelTypes } from "discord.js/typings/enums";
-import { BaseCommandOptionsData, CommandChoicesData, numberAndChoicesOptions } from "../types";
-import subCommand from "./sub/subCommand";
-import subCommandGroup from "./sub/subCommandGroup";
+import { BaseCommandOptionsData, CommandChoicesData, numberAndChoicesOptions } from "../../types";
 
-class Chat_Input {
-  protected name: string = undefined!;
-  protected description: string = undefined!;
-  protected defaultPermission: boolean | undefined = undefined;
-  protected options: ApplicationCommandOptionData[] = [];
+type SubCommandOptions = (
+  | ApplicationCommandChoicesData
+  | ApplicationCommandNonOptionsData
+  | ApplicationCommandChannelOptionData
+  | ApplicationCommandAutocompleteOption
+  | ApplicationCommandNumericOptionData
+)[];
 
-  setName(name: string): this {
-    if (!name) throw new Error("Name cannot be empty");
-    if (typeof name !== "string") throw new Error("Name must be a string");
+export default class subCommand {
+  protected name!: string;
+  protected description!: string;
+  protected options: SubCommandOptions = [];
 
+  setName(name: string) {
+    if (typeof name !== "string") throw new Error("subCommand: Name must be a string");
     this.name = name;
     return this;
   }
 
-  setDescription(description: string): this {
-    if (!description) throw new Error("Description cannot be empty");
-    if (typeof description !== "string") throw new Error("Description must be a string");
-
+  setDescription(description: string) {
+    if (typeof description !== "string") throw new Error("subCommand: Description must be a string");
     this.description = description;
-    return this;
-  }
-
-  setDefaultPermission(permission: boolean): this {
-    if (typeof permission !== "boolean") throw new Error("Permission must be a boolean");
-
-    this.defaultPermission = permission;
     return this;
   }
 
   addBooleanOption(booleanOptions: BaseCommandOptionsData): this {
     const { name, description, required } = booleanOptions;
 
-    if (!name) throw new Error("Name is required");
-    if (typeof name !== "string") throw new Error("Name must be a string");
+    if (!name) throw new Error("subCommand: Name is required");
+    if (typeof name !== "string") throw new Error("subCommand: Name must be a string");
 
-    if (!description) throw new Error("Description is required");
-    if (typeof description !== "string") throw new Error("Description must be a string");
+    if (!description) throw new Error("subCommand: Description is required");
+    if (typeof description !== "string") throw new Error("subCommand: Description must be a string");
 
-    if (required && typeof required !== "boolean") throw new Error("Required must be a boolean");
+    if (required && typeof required !== "boolean") throw new Error("subCommand: Required must be a boolean");
 
     this.options.push({ name, description, type: "BOOLEAN", required });
 
@@ -72,7 +74,12 @@ class Chat_Input {
 
   addIntegerOption(integerOptions: numberAndChoicesOptions): this {
     const { name, description, required, autocomplete } = integerOptions;
-    const data: any = { name, description, type: "INTEGER", required };
+    const data: any = {
+      name,
+      description,
+      type: "INTEGER",
+      required,
+    };
     if (!autocomplete) {
       const { choices, minValue, maxValue } = integerOptions;
       if (choices) data.choices = choices;
@@ -152,34 +159,6 @@ class Chat_Input {
     return this;
   }
 
-  addSubCommandOption(subCommandOption: (sub: subCommand) => subCommand): this {
-    const sub = subCommandOption(new subCommand());
-    const { name, description, options } = sub.toJSON();
-
-    if (!name) throw new Error("subCommand: name is required");
-    if (typeof name !== "string") throw new Error("subCommand must be a string");
-
-    if (!description) throw new Error("subCommand: Description is required");
-    if (typeof description !== "string") throw new Error("subCommand: Description must be a string");
-
-    this.options.push({ name, description, type: "SUB_COMMAND", options });
-    return this;
-  }
-
-  addSubCommandGroupOption(subCommandGroupOption: (sub: subCommandGroup) => subCommandGroup): this {
-    const sub = subCommandGroupOption(new subCommandGroup());
-    const { name, description, options } = sub.toJSON();
-
-    if (!name) throw new Error("subCommandGroup: name is required");
-    if (typeof name !== "string") throw new Error("subCommandGroup must be a string");
-
-    if (!description) throw new Error("subCommandGroup: Description is required");
-    if (typeof description !== "string") throw new Error("subCommandGroup: Description must be a string");
-
-    this.options.push({ name, description, type: "SUB_COMMAND_GROUP", options });
-    return this;
-  }
-
   addUserOption(userOption: BaseCommandOptionsData): this {
     const { name, description, required } = userOption;
 
@@ -196,15 +175,17 @@ class Chat_Input {
     return this;
   }
 
-  toJSON(): ChatInputApplicationCommandData {
+  toJSON(): {
+    name: string;
+    description: string;
+    options: SubCommandOptions;
+    type: "SUB_COMMAND";
+  } {
     return {
       name: this.name,
       description: this.description,
-      defaultPermission: this.defaultPermission,
       options: this.options,
-      type: "CHAT_INPUT",
+      type: "SUB_COMMAND",
     };
   }
 }
-
-export default Chat_Input;
