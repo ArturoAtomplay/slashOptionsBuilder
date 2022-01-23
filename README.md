@@ -1,55 +1,66 @@
-# slashOptionsBuilder
-options for slash commands discord.js
+# [slashOptionsBuilder](https://github.com/arturoAtomplay/slashOptionsBuilder)
 
-# installation
+#### options for slash commands discord.js
+
+## Installation
+
 ```bash
-npm i slash-options-builder
+npm install slash-options-builder
 ```
 
-# example
+## Usage
 
 ```javascript
-  const Discord = require("discord.js");
-  const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES"] });
-  const { SlashOptions } = require("slash-options-builder");
+const Discord = require("discord.js");
+const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES"] });
+const { Slash_Chat_Input, Slash_Message, Slash_User } = require("slash-options-builder");
 
-const cmd1 = SlashOptions("CHAT_INPUT").setName("test").setDescription("test") // . Ctrl + space or ⌘ + space for more opcions
+const slash = new Slash_Chat_Input()
+  .setName("say")
+  .setDescription("say Command")
+  .addStringOption({ name: "text", description: "Text to send", required: true }); // . Ctrl + space or ⌘ + space for more options
 
-const commands = [cmd1];
+const slashMessage = new Slash_Message().setName("make a message hidden");
 
-client.on("ready", () => {
-  console.log("I am ready!");
+const slashUser = new Slash_User().setName("hi user");
+
+client.on("ready", () => console.log("Ready!"));
+
+client.on("messageCreate", async (message) => {
+  if (message.content === "!deploy") {
+    if (message.author.id !== "ID") return;
+    const msg = await message.channel.send("Deploying...");
+
+    message.guild.commands
+      .set([slash, slashMessage, slashUser].map((cmd) => cmd.toJSON()))
+      .then(() => msg.edit("Deployed!"))
+      .catch((err) => msg.edit("Error!" + err.message));
+  }
 });
 
-client.on("messageCreate", (message) => {
-  (() => {
-    if (message.content === "ping") {
-      message.reply("pong");
-    } else if (message.content === "!deploy") {
-      if (message.author.id !== "624712119098802198") return message.reply("You are not authorized to use this command!");
-      message.channel.send("Deploying...").then((m) => {
-        message.guild.commands
-          .set(commands.map((c) => c.toJSON()))
-          .then(() => {
-            m.edit("Deployed!");
-          })
-          .catch((e) => {
-            m.edit("Failed to deploy!");
-            console.error(e);
-          });
-      });
-    }
-  })();
-});
-
-client.on("interactionCreate", (interaction) => {
+client.on("interactionCreate", async (interaction) => {
   if (interaction.isCommand()) {
-    console.log({ commandName: interaction.commandName, options: interaction.options.data });
-    if (interaction.commandName === "test") {
-      interaction.reply("test");
+    if (interaction.command.name === "slash") {
+      const text = interaction.options.getString("text");
+      interaction.reply(text);
     }
+  } else if (interaction.isUserContextMenu()) {
+    interaction.reply(`Hello ${interaction.user.username}`);
+  } else if (interaction.isMessageContextMenu()) {
+    const message = await interaction.channel.messages.fetch(interaction.targetId);
+    interaction.reply(`||${message.content}||`);
   }
 });
 
 client.login("TOKEN");
 ```
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
