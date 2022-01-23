@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, ExcludeEnum } from "discord.js";
 import { ChannelTypes } from "discord.js/typings/enums";
-import { BaseCommandOptionsData, CommandChoicesData, numberAndChoicesOptions } from "../types";
+import { BaseCommandOptionsData, numberAndChoicesOptions, stringOption } from "../types";
 import subCommand from "./sub/subCommand";
 import subCommandGroup from "./sub/subCommandGroup";
 
@@ -65,7 +65,13 @@ class Chat_Input {
     if (channelTypes && !Array.isArray(channelTypes)) throw new Error("ChannelTypes must be an array");
     if (typeof required !== "boolean") throw new Error("Required must be a boolean");
 
-    this.options.push({ name, description, type: "CHANNEL", channelTypes, required });
+    this.options.push({
+      name,
+      description,
+      type: "CHANNEL",
+      channelTypes,
+      required,
+    });
 
     return this;
   }
@@ -130,22 +136,14 @@ class Chat_Input {
     return this;
   }
 
-  addStringOption(stringOption: CommandChoicesData): this {
-    const { name, description, required, choices } = stringOption;
+  addStringOption(stringOption: stringOption): this {
+    const { name, description, autocomplete, required } = stringOption;
 
-    if (!name) throw new Error("Name is required");
-    if (typeof name !== "string") throw new Error("Name must be a string");
+    const data: any = { name, description, autocomplete, required, type: "STRING" };
 
-    if (!description) throw new Error("Description is required");
-    if (typeof description !== "string") throw new Error("Description must be a string");
-
-    if (required && typeof required !== "boolean") throw new Error("Required must be a boolean");
-
-    if (choices && !Array.isArray(choices)) throw new Error("Choices must be an array");
-
-    const data: ApplicationCommandOptionData = { name, description, type: "STRING", required };
-
-    if (choices) data.choices = choices;
+    if (!autocomplete) {
+      if (stringOption.choices) data.choices = stringOption.choices;
+    } else data.autocomplete = true;
 
     this.options.push(data);
 
@@ -176,7 +174,12 @@ class Chat_Input {
     if (!description) throw new Error("subCommandGroup: Description is required");
     if (typeof description !== "string") throw new Error("subCommandGroup: Description must be a string");
 
-    this.options.push({ name, description, type: "SUB_COMMAND_GROUP", options });
+    this.options.push({
+      name,
+      description,
+      type: "SUB_COMMAND_GROUP",
+      options,
+    });
     return this;
   }
 

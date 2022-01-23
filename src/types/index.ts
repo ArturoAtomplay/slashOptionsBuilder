@@ -22,6 +22,9 @@ interface CommandAutocompleteOption extends BaseCommandOptionsData {
 
 export interface CommandChoicesData extends BaseCommandOptionsData {
   choices?: ApplicationCommandOptionChoice[];
+  autocomplete?: false;
 }
+
+export type stringOption = CommandChoicesData | CommandAutocompleteOption;
 
 export type numberAndChoicesOptions = CommandChoicesAndNumberData | CommandAutocompleteOption;
