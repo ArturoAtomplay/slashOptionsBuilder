@@ -1,6 +1,6 @@
 {
   "name": "slash-options-builder",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "options for slash commands discord.js",
   "main": "lib/index.js",
   "scripts": {
