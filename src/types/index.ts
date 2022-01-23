@@ -1,25 +1,27 @@
-import { ApplicationCommandOptionChoice, BaseApplicationCommandOptionsData } from "discord.js";
+import { ApplicationCommandOptionChoice } from "discord.js";
 
-export interface ApplicationCommandChannelOption {
+export interface BaseCommandOptionsData {
   name: string;
   description: string;
-  channelTypes?: (
-    | "GUILD_TEXT"
-    | "DM"
-    | "GUILD_VOICE"
-    | "GROUP_DM"
-    | "GUILD_CATEGORY"
-    | "GUILD_NEWS"
-    | "GUILD_STORE"
-    | "GUILD_NEWS_THREAD"
-    | "GUILD_PUBLIC_THREAD"
-    | "GUILD_PRIVATE_THREAD"
-    | "GUILD_STAGE_VOICE"
-  )[];
   required?: boolean;
-  autocomplete?: boolean;
 }
 
-export interface ApplicationCommandChoicesOption extends BaseApplicationCommandOptionsData {
+interface CommandNumberData extends BaseCommandOptionsData {
+  minValue?: number;
+  maxValue?: number;
+}
+
+interface CommandChoicesAndNumberData extends CommandNumberData {
+  choices?: ApplicationCommandOptionChoice[];
+  autocomplete?: false;
+}
+
+interface CommandAutocompleteOption extends BaseCommandOptionsData {
+  autocomplete: true;
+}
+
+export interface CommandChoicesData extends BaseCommandOptionsData {
   choices?: ApplicationCommandOptionChoice[];
 }
+
+export type numberAndChoicesOptions = CommandChoicesAndNumberData | CommandAutocompleteOption;
