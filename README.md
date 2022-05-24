@@ -1,6 +1,6 @@
 # [slashOptionsBuilder](https://github.com/arturoAtomplay/slashOptionsBuilder)
 
-#### options for slash commands discord.js
+#### options for slash commands discord.js@^13.7.0
 
 ## Installation
 
@@ -18,13 +18,19 @@ const { Slash_Chat_Input, Slash_Message, Slash_User } = require("slash-options-b
 const slash = new Slash_Chat_Input()
   .setName("say")
   .setDescription("say Command")
-  .addStringOption({ name: "text", description: "Text to send", required: true }); // . Ctrl + space or ⌘ + space for more options
+  .addStringOption({ name: "text", description: "Text to send", required: true })
+  // . Ctrl + space or ⌘ + space for more options
+  .toJSON();
 
-const slashMessage = new Slash_Message().setName("make a message hidden");
+const slashMessage = new Slash_Message()
+.setName("make a message hidden")
+.toJSON();
 
-const slashUser = new Slash_User().setName("hi user");
+const slashUser = new Slash_User()
+.setName("hi user")
+.toJSON();
 
-client.on("ready", () => console.log("Ready!"));
+client.once("ready", () => console.log("Ready!"));
 
 client.on("messageCreate", async (message) => {
   if (message.content === "!deploy") {
@@ -32,7 +38,7 @@ client.on("messageCreate", async (message) => {
     const msg = await message.channel.send("Deploying...");
 
     message.guild.commands
-      .set([slash, slashMessage, slashUser].map((cmd) => cmd.toJSON()))
+      .set([slash, slashMessage, slashUser])
       .then(() => msg.edit("Deployed!"))
       .catch((err) => msg.edit("Error!" + err.message));
   }
@@ -45,14 +51,14 @@ client.on("interactionCreate", async (interaction) => {
       interaction.reply(text);
     }
   } else if (interaction.isUserContextMenu()) {
-    interaction.reply(`Hello ${interaction.user.username}`);
+    interaction.reply(`Hello ${interaction.targetUser.tag}`);
   } else if (interaction.isMessageContextMenu()) {
     const message = await interaction.channel.messages.fetch(interaction.targetId);
     interaction.reply(`||${message.content}||`);
   }
 });
 
-client.login("TOKEN");
+client.login("SuperSecretToken");
 ```
 
 ## Contributing
