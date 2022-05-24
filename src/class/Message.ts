@@ -1,33 +1,38 @@
-class Message {
-  protected name!: string;
-  protected defaultPermission!: boolean;
+import type { LocalizationMap } from 'discord-api-types/v10'
+import { validateName, validateNameLocalizations, validatePermission } from '../utils/validate'
 
-  setName(name: string) {
-    if (!name) throw new Error("Name cannot be empty");
-    if (typeof name !== "string") throw new Error("Name must be a string");
+export default class Message {
+  protected name!: string
+  protected description!: string
+  protected nameLocalizations?: LocalizationMap
+  protected defaultPermission?: boolean
 
-    this.name = name;
-    return this;
+  setName (name: string) {
+    this.name = validateName(name)
+    return this
   }
 
-  setDefaultPermission(permission: boolean): this {
-    if (typeof permission !== "boolean") throw new Error("Permission must be a boolean");
-
-    this.defaultPermission = permission;
-    return this;
+  setNameByLocales (locales: LocalizationMap) {
+    this.nameLocalizations = validateNameLocalizations(locales)
+    return this
   }
 
-  toJSON(): {
-    name: string;
-    defaultPermission: boolean;
-    type: "MESSAGE";
-  } {
+  setDefaultPermission (permission: boolean) {
+    this.defaultPermission = validatePermission(permission)
+    return this
+  }
+
+  toJSON (): {
+    name: string
+    nameLocalizations?: LocalizationMap
+    defaultPermission?: boolean
+    type: 'MESSAGE'
+    } {
     return {
-      name: this.name,
+      name: validateName(this.name),
+      nameLocalizations: validateNameLocalizations(this.nameLocalizations),
       defaultPermission: this.defaultPermission,
-      type: "MESSAGE",
-    };
+      type: 'MESSAGE'
+    }
   }
 }
-
-export default Message;
