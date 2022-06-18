@@ -26,7 +26,8 @@ client.once('ready', () => console.log('Ready!'))
 
 client.on('messageCreate', async (message) => {
   if (message.content === '!deploy') {
-    // if (message.author.id !== 'ID') return
+    if (!message.inGuild()) return
+    if (message.author.id !== 'ID') return
     const msg = await message.channel.send('Deploying...')
 
     message.guild.commands
@@ -38,13 +39,14 @@ client.on('messageCreate', async (message) => {
 
 client.on('interactionCreate', async (interaction) => {
   if (interaction.isCommand()) {
-    if (interaction.command.name === 'say') {
-      const text = interaction.options.getString('text')
+    if (interaction.commandName === 'say') {
+      const text = interaction.options.getString('text', true)
       interaction.reply(text)
     }
   } else if (interaction.isUserContextMenu()) {
     interaction.reply(`Hello ${interaction.targetUser.tag}`)
   } else if (interaction.isMessageContextMenu()) {
+    if (!interaction.channel) return
     const message = await interaction.channel.messages.fetch(interaction.targetId)
     interaction.reply(`||${message.content}||`)
   }
